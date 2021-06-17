@@ -1,14 +1,15 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Button as RNEButton, ButtonProps } from 'react-native-elements';
+import { Button as RNEButton } from 'react-native-elements';
 import { colors } from '../../contants';
 
-export default function Button(props) {
+export default function Button({ style, containerStyle, titleStyle, ...rest }) {
   return (
-    <View style={{ width: '100%' }}>
+    <View style={{ width: '100%', ...containerStyle }}>
       <RNEButton
-        buttonStyle={{ backgroundColor: colors.primaryPurple }}
-        {...props}
+        buttonStyle={{ backgroundColor: colors.primaryPurple, ...style }}
+        {...rest}
+        titleStyle={{ ...titleStyle }}
       />
     </View>
   );

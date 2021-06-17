@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 
 import Button from '../../../components/Button';
-import { colors } from '../../../contants';
+import { colors, metrics } from '../../../contants';
 
 import styles from './styles';
 
@@ -14,7 +14,8 @@ export default function Login() {
       <Button
         title="Quero me cadastrar"
         type="clear"
-        buttonStyle={{ backgroundColor: 'transparent' }}
+        style={{ backgroundColor: 'transparent' }}
+        containerStyle={{ marginTop: metrics.baseSpace }}
         titleStyle={{ color: colors.primaryPurple }}
       />
     </View>
