@@ -4,7 +4,7 @@ import AuthStack from './AuthStack';
 import BottomTab from './BottomTab';
 
 export default function Routes() {
-  const isLogged = true;
+  const isLogged = false;
 
   return (
     <NavigationContainer
