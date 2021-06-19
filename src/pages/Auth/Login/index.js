@@ -9,7 +9,7 @@ import { colors, metrics } from '../../../contants';
 
 import styles from './styles';
 
-export default function Login() {
+export default function Login({ navigation }) {
   const {
     handleSubmit,
     control,
@@ -77,6 +77,7 @@ export default function Login() {
         style={{ backgroundColor: 'transparent' }}
         containerStyle={{ marginTop: metrics.baseSpace }}
         titleStyle={{ color: colors.primaryPurple }}
+        onPress={() => navigation.navigate('SignUp')}
       />
     </KeyboardAwareScrollView>
   );
