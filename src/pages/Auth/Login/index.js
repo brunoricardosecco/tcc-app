@@ -8,6 +8,7 @@ import Input from '../../../components/Input';
 import { colors, metrics } from '../../../contants';
 
 import styles from './styles';
+import { useAuth } from '../../../hooks/useAuth';
 
 export default function Login({ navigation }) {
   const {
@@ -15,9 +16,10 @@ export default function Login({ navigation }) {
     control,
     formState: { errors },
   } = useForm();
+  const { authenticate, isLoading } = useAuth();
 
-  const onHandleSubmit = (data) => {
-    console.log(data);
+  const onHandleSubmit = async ({ email, password }) => {
+    authenticate({ email, password });
   };
 
   return (
@@ -36,7 +38,7 @@ export default function Login({ navigation }) {
           },
         }}
         name="email"
-        defaultValue=""
+        defaultValue="tesst@teste.com"
         render={({ field: { onChange, value } }) => (
           <Input
             placeholder="E-mail"
@@ -58,7 +60,7 @@ export default function Login({ navigation }) {
           },
         }}
         name="password"
-        defaultValue=""
+        defaultValue="test123"
         render={({ field: { onChange, value } }) => (
           <Input
             placeholder="Senha"
@@ -70,7 +72,12 @@ export default function Login({ navigation }) {
           />
         )}
       />
-      <Button title="Entrar" onPress={handleSubmit(onHandleSubmit)} />
+      <Button
+        title="Entrar"
+        onPress={handleSubmit(onHandleSubmit)}
+        loading={isLoading}
+        disable={isLoading}
+      />
       <Button
         title="Quero me cadastrar"
         type="clear"
