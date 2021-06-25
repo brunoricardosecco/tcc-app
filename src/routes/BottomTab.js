@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
 const CustomTabBarButton = ({ children, onPress }) => (
   <TouchableOpacity
     style={{
-      top: -30,
+      top: Platform.OS === 'ios' ? -15 : -45,
       justifyContent: 'center',
       alignItems: 'center',
       shadowColor: colors.primaryPurple,
