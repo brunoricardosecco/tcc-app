@@ -1,13 +1,13 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3333',
+  baseURL: 'http://192.168.0.166:3333',
 });
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.log(error.response);
+    console.log(error);
     if (!error.response?.data?.message) {
       const newError = {
         response: {
@@ -18,6 +18,7 @@ api.interceptors.response.use(
       };
       return Promise.reject(newError);
     }
+    return Promise.reject(error);
   }
 );
 

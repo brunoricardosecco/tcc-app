@@ -3,12 +3,13 @@ import { AuthContext } from '../context/AuthContext';
 
 export function useAuth() {
   const isLogged = useContextSelector(AuthContext, (auth) => auth.isLogged);
+  const isLoading = useContextSelector(AuthContext, (auth) => auth.isLoading);
   const authenticate = useContextSelector(
     AuthContext,
     (auth) => auth.authenticate
   );
   const logout = useContextSelector(AuthContext, (auth) => auth.logout);
-  const isLoading = useContextSelector(AuthContext, (auth) => auth.isLoading);
+  const signUp = useContextSelector(AuthContext, (auth) => auth.signUp);
 
-  return { isLogged, authenticate, logout, isLoading };
+  return { isLogged, authenticate, logout, isLoading, signUp };
 }

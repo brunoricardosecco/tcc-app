@@ -10,6 +10,12 @@ import Routes from './routes';
 import AppProvider from './context';
 
 export default function App() {
+  if (__DEV__) {
+    import('./ReactotronConfig').then(() =>
+      console.log('Reactotron Configured')
+    );
+  }
+
   return (
     <AppProvider>
       <View style={{ backgroundColor: colors.primaryDark, flex: 1 }}>

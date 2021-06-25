@@ -10,3 +10,14 @@ export function authenticate({ email, password }) {
     },
   });
 }
+
+export function signUp(userData) {
+  return api.request({
+    headers: {
+      'Content-type': 'multipart/form-data',
+    },
+    method: 'POST',
+    url: '/user',
+    data: userData,
+  });
+}

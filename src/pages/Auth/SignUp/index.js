@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Platform } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Avatar } from 'react-native-elements';
 import { useForm, Controller } from 'react-hook-form';
@@ -11,10 +12,11 @@ import { colors, metrics } from '../../../contants';
 
 import styles from './styles';
 import { normalize } from '../../../helpers';
+import { useAuth } from '../../../hooks/useAuth';
 
 export default function SignUp({ navigation }) {
   const [image, setImage] = useState(null);
-
+  const { signUp, isLoading } = useAuth();
   const {
     handleSubmit,
     control,
@@ -22,8 +24,14 @@ export default function SignUp({ navigation }) {
     formState: { errors },
   } = useForm();
 
+  const goBack = () => navigation.goBack();
+
   const onHandleSubmit = (data) => {
-    console.log(data);
+    signUp({
+      ...data,
+      image,
+      goBack,
+    });
   };
 
   const onHandlePickImage = async () => {
@@ -48,14 +56,28 @@ export default function SignUp({ navigation }) {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 1,
+        quality: 0.2,
       });
 
-      if (result.cancelled) {
-        return;
-      }
+      if (!result.cancelled) {
+        // ImagePicker saves the taken photo to disk and returns a local URI to it
+        const localUri = result.uri;
+        const filename = localUri.split('/').pop();
 
-      setImage(result.uri);
+        // Infer the type of the image
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : `image`;
+        console.log({ uri: localUri, filename, type });
+        setImage({
+          uri:
+            Platform.OS === 'android'
+              ? localUri
+              : localUri.replace('file://', ''),
+          filename,
+          type,
+          name: filename,
+        });
+      }
     } catch (err) {
       showMessage({
         type: 'warning',
@@ -70,13 +92,13 @@ export default function SignUp({ navigation }) {
       <Avatar
         rounded
         size="xlarge"
-        source={image && { uri: image }}
+        source={image && { uri: image.uri }}
         icon={!image && { name: 'person', color: colors.grey, type: 'ioicons' }}
         overlayContainerStyle={{ backgroundColor: 'white' }}
         containerStyle={{ marginBottom: metrics.baseSpace }}
         onPress={onHandlePickImage}
       >
-        <Avatar.Accessory size={normalize(32)} />
+        <Avatar.Accessory size={normalize(32)} onPress={onHandlePickImage} />
       </Avatar>
       <Controller
         name="name"
@@ -169,14 +191,18 @@ export default function SignUp({ navigation }) {
           />
         )}
       />
-      <Button title="Cadastrar" onPress={handleSubmit(onHandleSubmit)} />
+      <Button
+        title="Cadastrar"
+        onPress={handleSubmit(onHandleSubmit)}
+        loading={isLoading}
+      />
       <Button
         title="Voltar"
         type="clear"
         style={{ backgroundColor: 'transparent' }}
         containerStyle={{ marginTop: metrics.baseSpace }}
         titleStyle={{ color: colors.primaryPurple }}
-        onPress={() => navigation.goBack()}
+        onPress={goBack}
       />
     </KeyboardAwareScrollView>
   );
