@@ -14,7 +14,7 @@ import {
   getStates as getStatesRequest,
   getCities as getCitiesRequest,
 } from '../../../services/requests/address';
-import { colors, metrics } from '../../../contants';
+import { colors, metrics } from '../../../constants';
 import styles from './styles';
 import { normalize } from '../../../helpers';
 import { useAuth } from '../../../hooks/useAuth';
@@ -28,7 +28,6 @@ export default function SignUp({ navigation }) {
     handleSubmit,
     control,
     watch,
-    getValues,
     formState: { errors },
   } = useForm();
   const stateId = watch('state');

@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import FlashMessage from 'react-native-flash-message';
 
-import { colors } from './contants';
+import { colors } from './constants';
 
 import Routes from './routes';
 import AppProvider from './context';

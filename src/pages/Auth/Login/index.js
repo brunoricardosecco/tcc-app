@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 import Button from '../../../components/Button';
 import Input from '../../../components/Input';
-import { colors, metrics } from '../../../contants';
+import { colors, metrics } from '../../../constants';
 
 import styles from './styles';
 import { useAuth } from '../../../hooks/useAuth';

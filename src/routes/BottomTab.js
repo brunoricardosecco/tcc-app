@@ -8,7 +8,7 @@ import Rank from '../pages/App/Rank';
 import Config from '../pages/App/Config';
 import Profile from '../pages/App/Profile';
 import AddTransaction from '../pages/App/AddTransaction';
-import { colors } from '../contants';
+import { colors } from '../constants';
 
 const styles = StyleSheet.create({
   shadow: {

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
-import { colors, metrics } from '../../contants';
+import { colors, metrics } from '../../constants';
 import { normalize } from '../../helpers';
 
 export default function Picker({

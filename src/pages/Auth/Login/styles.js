@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { metrics } from '../../../contants';
+import { metrics } from '../../../constants';
 
 const styles = StyleSheet.create({
   container: {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Button as RNEButton } from 'react-native-elements';
-import { colors } from '../../contants';
+import { colors } from '../../constants';
 
 export default function Button({ style, containerStyle, titleStyle, ...rest }) {
   return (
