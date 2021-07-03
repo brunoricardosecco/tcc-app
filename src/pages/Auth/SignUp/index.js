@@ -1,28 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Platform } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Avatar } from 'react-native-elements';
 import { useForm, Controller } from 'react-hook-form';
 import * as ImagePicker from 'expo-image-picker';
-
 import { showMessage } from 'react-native-flash-message';
+
 import Button from '../../../components/Button';
 import Input from '../../../components/Input';
-import { colors, metrics } from '../../../contants';
+import Picker from '../../../components/Picker';
 
+import {
+  getStates as getStatesRequest,
+  getCities as getCitiesRequest,
+} from '../../../services/requests/address';
+import { colors, metrics } from '../../../contants';
 import styles from './styles';
 import { normalize } from '../../../helpers';
 import { useAuth } from '../../../hooks/useAuth';
 
 export default function SignUp({ navigation }) {
   const [image, setImage] = useState(null);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
   const { signUp, isLoading } = useAuth();
   const {
     handleSubmit,
     control,
     watch,
+    getValues,
     formState: { errors },
   } = useForm();
+  const stateId = watch('state');
 
   const goBack = () => navigation.goBack();
 
@@ -87,6 +96,55 @@ export default function SignUp({ navigation }) {
     }
   };
 
+  const getStates = async () => {
+    try {
+      const {
+        data: { states: receivedStates },
+      } = await getStatesRequest();
+      const formattedStates = receivedStates.map((state) => ({
+        label: `${state.name}`,
+        value: state.id,
+      }));
+
+      setStates(formattedStates);
+    } catch (error) {
+      showMessage({
+        type: 'warning',
+        icon: 'warning',
+        message: 'Erro ao recuperar os estados',
+      });
+    }
+  };
+
+  const getCities = async () => {
+    try {
+      const {
+        data: { cities: receivedCities },
+      } = await getCitiesRequest({ stateId });
+      const formattedCities = receivedCities.map((state) => ({
+        label: `${state.name}`,
+        value: state.id,
+      }));
+      setCities(formattedCities);
+    } catch (error) {
+      showMessage({
+        type: 'warning',
+        icon: 'warning',
+        message: 'Erro ao recuperar as cidades',
+      });
+    }
+  };
+
+  useEffect(() => {
+    getStates();
+  }, []);
+
+  useEffect(() => {
+    if (stateId) {
+      getCities();
+    }
+  }, [stateId]);
+
   return (
     <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       <Avatar
@@ -118,6 +176,44 @@ export default function SignUp({ navigation }) {
             value={value}
             onChangeText={(text) => onChange(text)}
             errorMessage={errors.name?.message}
+          />
+        )}
+      />
+      <Controller
+        name="state"
+        control={control}
+        rules={{
+          required: {
+            value: true,
+            message: 'Preencha este campo',
+          },
+        }}
+        defaultValue=""
+        render={({ field: { onChange, value } }) => (
+          <Picker
+            onValueChange={(v) => onChange(v)}
+            value={value}
+            items={states}
+            errorMessage={errors.state?.message}
+          />
+        )}
+      />
+      <Controller
+        name="city"
+        control={control}
+        rules={{
+          required: {
+            value: true,
+            message: 'Preencha este campo',
+          },
+        }}
+        defaultValue=""
+        render={({ field: { onChange, value } }) => (
+          <Picker
+            onValueChange={(v) => onChange(v)}
+            value={value}
+            items={cities}
+            errorMessage={errors.city?.message}
           />
         )}
       />

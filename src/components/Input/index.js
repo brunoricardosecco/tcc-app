@@ -7,8 +7,9 @@ function Input({ style, containerStyle, titleStyle, ...rest }, ref) {
     <RNEInput
       ref={ref}
       inputContainerStyle={{ borderBottomColor: colors.primaryPurple }}
-      {...rest}
       inputStyle={{ color: colors.white }}
+      placeholderStyle={{ color: colors.grey }}
+      {...rest}
     />
   );
 }
