@@ -38,7 +38,7 @@ export default function Login({ navigation }) {
           },
         }}
         name="email"
-        defaultValue="tesst@teste.com"
+        defaultValue="tue@as.c"
         render={({ field: { onChange, value } }) => (
           <Input
             placeholder="E-mail"
@@ -60,7 +60,7 @@ export default function Login({ navigation }) {
           },
         }}
         name="password"
-        defaultValue="test123"
+        defaultValue="123"
         render={({ field: { onChange, value } }) => (
           <Input
             placeholder="Senha"
@@ -77,11 +77,15 @@ export default function Login({ navigation }) {
         onPress={handleSubmit(onHandleSubmit)}
         loading={isLoading}
         disable={isLoading}
+        style={{ marginHorizontal: metrics.baseSpace }}
       />
       <Button
         title="Quero me cadastrar"
         type="clear"
-        style={{ backgroundColor: 'transparent' }}
+        style={{
+          backgroundColor: 'transparent',
+          marginHorizontal: metrics.baseSpace,
+        }}
         containerStyle={{ marginTop: metrics.baseSpace }}
         titleStyle={{ color: colors.primaryPurple }}
         onPress={() => navigation.navigate('SignUp')}

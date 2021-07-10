@@ -19,6 +19,7 @@ function AuthProvider({ children }) {
       setIsLoading((prevState) => !prevState);
 
       const { data } = await authenticateRequest({ email, password });
+      api.defaults.headers.authorization = `Bearer ${data.access_token}`;
       setUser(data.user);
     } catch (error) {
       console.log(error.response);
@@ -68,7 +69,7 @@ function AuthProvider({ children }) {
 
   const logout = useCallback(() => {
     setUser(null);
-    api.defaults.headers.authentication = null;
+    api.defaults.headers.authorization = null;
   }, []);
 
   return (

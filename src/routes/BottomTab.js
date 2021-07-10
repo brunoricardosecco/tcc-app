@@ -4,11 +4,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 import Home from '../pages/App/Home';
-import Rank from '../pages/App/Rank';
 import Config from '../pages/App/Config';
 import Profile from '../pages/App/Profile';
 import AddTransaction from '../pages/App/AddTransaction';
 import { colors } from '../constants';
+import RankStack from './RankStack';
 
 const styles = StyleSheet.create({
   shadow: {
@@ -35,7 +35,7 @@ const CustomTabBarButton = ({ children, onPress }) => (
         height: 0,
       },
       shadowOpacity: 1,
-      shadowRadius: 20,
+      shadowRadius: 5,
       elevation: 12,
     }}
     activeOpacity={1}
@@ -101,8 +101,8 @@ export default function BottomTab() {
           }}
         />
         <Tab.Screen
-          name="Rank"
-          component={Rank}
+          name="RankStack"
+          component={RankStack}
           options={{
             tabBarIcon: ({ focused, size }) => (
               <View
