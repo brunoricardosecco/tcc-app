@@ -58,7 +58,11 @@ export default function Rank({ navigation }) {
           data={favoritesList}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item, index }) => (
-            <ItemList user={item} index={index + 1} navigation={navigation} />
+            <ItemList
+              favorite={item}
+              index={index + 1}
+              navigation={navigation}
+            />
           )}
         />
       </SafeAreaView>
@@ -66,7 +70,7 @@ export default function Rank({ navigation }) {
   );
 }
 
-function ItemList({ user, index, navigation }) {
+function ItemList({ favorite, index, navigation }) {
   const placeStyle = {
     1: styles.firstPlace,
     2: styles.secondPlace,
@@ -76,12 +80,12 @@ function ItemList({ user, index, navigation }) {
 
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate('UserProfile', { user })}
+      onPress={() => navigation.navigate('UserProfile', { favorite })}
     >
       <View
         style={[styles.itemContainer, placeStyle[index] || placeStyle.default]}
       >
-        <Text style={styles.username}>{user.favoriteUser?.name}</Text>
+        <Text style={styles.username}>{favorite.favoriteUser?.name}</Text>
       </View>
     </TouchableOpacity>
   );
