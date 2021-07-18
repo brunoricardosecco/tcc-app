@@ -15,12 +15,11 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     marginHorizontal: metrics.baseSpace,
-    flex: 1,
     backgroundColor: colors.primaryPurple,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: metrics.baseRadius,
-    padding: metrics.baseSpace,
+    padding: metrics.baseSpace * 1.5,
     marginTop: metrics.baseSpace,
     borderWidth: 2,
     borderColor: colors.primaryPurple,

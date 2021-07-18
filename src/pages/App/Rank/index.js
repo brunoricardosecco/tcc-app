@@ -6,24 +6,33 @@ import {
   FlatList,
   View,
   TouchableOpacity,
+  RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 import { showMessage } from 'react-native-flash-message';
-import { getFavorites } from '../../../services/requests/favorite';
+import { Avatar } from 'react-native-elements/dist/avatar/Avatar';
+import { getUsers } from '../../../services/requests/user';
 
 import Input from '../../../components/Input';
 import { colors, metrics } from '../../../constants';
 import { normalize } from '../../../helpers';
 import styles from './styles';
+import { baseURL } from '../../../services/api';
 
 export default function Rank({ navigation }) {
   const [input, setInput] = useState('');
   const [favoritesList, setFavoritesList] = useState([]);
+  const [searchList, setSearchList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const getFavoritesAsync = async () => {
+    setIsLoading(true);
     try {
-      const { data } = await getFavorites();
+      const { data } = await getUsers({ onlyFavorited: true });
       setFavoritesList(data.favorites);
     } catch (error) {
       showMessage({
@@ -31,11 +40,42 @@ export default function Rank({ navigation }) {
         type: 'danger',
         message: 'Erro ao recuperar favoritos',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const onHandleSearchUser = async () => {
+    try {
+      if (input === '') {
+        setSearchList([]);
+        return;
+      }
+      setIsSearching(true);
+      const { data } = await getUsers({ name: input });
+      setSearchList(data.users);
+    } catch (error) {
+      showMessage({
+        icon: 'danger',
+        type: 'danger',
+        message: 'Erro ao procurar usuários',
+      });
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const clearSearchItems = () => {
+    setSearchList([]);
+    setInput('');
+  };
+
   useEffect(() => {
-    getFavoritesAsync();
+    const unsubscribe = navigation.addListener('focus', () => {
+      getFavoritesAsync();
+    });
+
+    return unsubscribe;
   }, []);
 
   return (
@@ -44,27 +84,52 @@ export default function Rank({ navigation }) {
         <Input
           value={input}
           onChangeText={(text) => setInput(text)}
-          rightIcon={{
-            type: 'ionicons',
-            name: 'search',
-            color: colors.primaryPurple,
-            size: normalize(24),
-            onPress: () => console.log('ts'),
-          }}
+          rightIcon={
+            isSearching ? (
+              <ActivityIndicator color={colors.primaryPurple} size="small" />
+            ) : (
+              {
+                type: 'ionicons',
+                name: 'search',
+                color: colors.primaryPurple,
+                size: normalize(24),
+                onPress: onHandleSearchUser,
+              }
+            )
+          }
           style={{ paddingHorizontal: metrics.baseSpace }}
-        />
-        <Text style={styles.title}>Favoritos</Text>
-        <FlatList
-          data={favoritesList}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item, index }) => (
-            <ItemList
-              favorite={item}
-              index={index + 1}
+          ListItem={(user) => (
+            <InputList
+              user={user}
+              clearSearchItems={clearSearchItems}
               navigation={navigation}
             />
           )}
+          data={searchList}
         />
+        <Text style={styles.title}>
+          {searchList.length > 0 ? 'Usuários' : 'Favoritos'}
+        </Text>
+        {searchList.length === 0 && (
+          <FlatList
+            data={favoritesList}
+            refreshControl={
+              <RefreshControl
+                tintColor={colors.white}
+                refreshing={isLoading}
+                onRefresh={getFavoritesAsync}
+              />
+            }
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item, index }) => (
+              <ItemList
+                favorite={item}
+                index={index + 1}
+                navigation={navigation}
+              />
+            )}
+          />
+        )}
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -80,12 +145,66 @@ function ItemList({ favorite, index, navigation }) {
 
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate('UserProfile', { favorite })}
+      onPress={() =>
+        navigation.navigate('UserProfile', {
+          userId: favorite.favoriteUser?.id,
+        })
+      }
     >
       <View
         style={[styles.itemContainer, placeStyle[index] || placeStyle.default]}
       >
+        <Avatar
+          rounded
+          size="medium"
+          source={{
+            uri: `${baseURL}/user/photo/${favorite.favoriteUser?.photo}`,
+          }}
+          title={favorite.favoriteUser?.name
+            ?.match(/\b(\w)/g)
+            ?.join('')
+            ?.substring(0, 2)}
+          overlayContainerStyle={{ backgroundColor: 'white' }}
+          containerStyle={{
+            marginBottom: metrics.baseSpace,
+            position: 'absolute',
+            left: metrics.baseSpace / 2,
+          }}
+        />
         <Text style={styles.username}>{favorite.favoriteUser?.name}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+function InputList({ user, navigation }) {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate('UserProfile', {
+          userId: user.id,
+        });
+      }}
+    >
+      <View style={styles.itemContainer}>
+        <Avatar
+          rounded
+          size="medium"
+          source={{
+            uri: `${baseURL}/user/photo/${user?.photo}`,
+          }}
+          title={user?.name
+            ?.match(/\b(\w)/g)
+            ?.join('')
+            ?.substring(0, 2)}
+          overlayContainerStyle={{ backgroundColor: 'white' }}
+          containerStyle={{
+            marginBottom: metrics.baseSpace,
+            position: 'absolute',
+            left: metrics.baseSpace / 2,
+          }}
+        />
+        <Text style={styles.username}>{user.name}</Text>
       </View>
     </TouchableOpacity>
   );
