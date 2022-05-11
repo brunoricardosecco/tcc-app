@@ -75,7 +75,6 @@ export default function SignUp({ navigation }) {
         // Infer the type of the image
         const match = /\.(\w+)$/.exec(filename);
         const type = match ? `image/${match[1]}` : `image`;
-        console.log({ uri: localUri, filename, type });
         setImage({
           uri:
             Platform.OS === 'android'

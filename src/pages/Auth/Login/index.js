@@ -38,7 +38,7 @@ export default function Login({ navigation }) {
           },
         }}
         name="email"
-        defaultValue="tue@as.c"
+        defaultValue="bruno@test.com"
         render={({ field: { onChange, value } }) => (
           <Input
             placeholder="E-mail"
@@ -60,7 +60,7 @@ export default function Login({ navigation }) {
           },
         }}
         name="password"
-        defaultValue="123"
+        defaultValue="test123"
         render={({ field: { onChange, value } }) => (
           <Input
             placeholder="Senha"

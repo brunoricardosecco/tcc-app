@@ -1,6 +1,11 @@
 import React from 'react';
 import { AuthProvider } from './AuthContext';
+import { WalletProvider } from './WalletContext';
 
 export default function AppProvider({ children }) {
-  return <AuthProvider>{children}</AuthProvider>;
+  return (
+    <WalletProvider>
+      <AuthProvider>{children}</AuthProvider>
+    </WalletProvider>
+  );
 }

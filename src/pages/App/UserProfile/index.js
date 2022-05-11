@@ -22,8 +22,8 @@ export default function UserProfile({ route, navigation }) {
   // hooks
   const { userId } = route.params;
   const [user, setUser] = useState(null);
-  const { countUp: profit } = useCountUp({
-    end: 200.12,
+  const { countUp: profit, update } = useCountUp({
+    end: 0,
     decimals: 2,
     decimal: ',',
   });
@@ -62,10 +62,11 @@ export default function UserProfile({ route, navigation }) {
       try {
         const { data } = await getUserDetails({ userId });
 
-        setUser(data.user);
+        setUser({ ...data.user, rentability: data.rentability });
         if (data?.user?.isFavorited) {
           animation.current?.play(12, 12);
         }
+        update(data.rentability);
       } catch (error) {
         showMessage({
           icon: 'danger',

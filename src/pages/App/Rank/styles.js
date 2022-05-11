@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
   username: {
     color: colors.white,
     fontWeight: 'bold',
+    fontSize: normalize(14),
   },
 });
 

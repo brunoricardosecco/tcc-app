@@ -33,7 +33,16 @@ export default function Rank({ navigation }) {
     setIsLoading(true);
     try {
       const { data } = await getUsers({ onlyFavorited: true });
-      setFavoritesList(data.favorites);
+
+      data.users?.sort((a, b) => {
+        if (Number(a.rentability) > Number(b.rentability)) {
+          return -1;
+        }
+
+        return 1;
+      });
+
+      setFavoritesList(data.users);
     } catch (error) {
       showMessage({
         icon: 'danger',
@@ -147,7 +156,7 @@ function ItemList({ favorite, index, navigation }) {
     <TouchableOpacity
       onPress={() =>
         navigation.navigate('UserProfile', {
-          userId: favorite.favoriteUser?.id,
+          userId: favorite.id,
         })
       }
     >
@@ -158,9 +167,9 @@ function ItemList({ favorite, index, navigation }) {
           rounded
           size="medium"
           source={{
-            uri: `${baseURL}/user/photo/${favorite.favoriteUser?.photo}`,
+            uri: `${baseURL}/user/photo/${favorite.photo}`,
           }}
-          title={favorite.favoriteUser?.name
+          title={favorite.name
             ?.match(/\b(\w)/g)
             ?.join('')
             ?.substring(0, 2)}
@@ -171,7 +180,30 @@ function ItemList({ favorite, index, navigation }) {
             left: metrics.baseSpace / 2,
           }}
         />
-        <Text style={styles.username}>{favorite.favoriteUser?.name}</Text>
+        <Text style={styles.username}>{favorite.name}</Text>
+        <View
+          style={{
+            position: 'absolute',
+            right: metrics.baseSpace / 2,
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            style={{
+              ...styles.username,
+            }}
+          >
+            Rentab.
+          </Text>
+          <Text
+            style={{
+              ...styles.username,
+              fontSize: normalize(16),
+            }}
+          >
+            {favorite.rentability?.toFixed(2)}%
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );

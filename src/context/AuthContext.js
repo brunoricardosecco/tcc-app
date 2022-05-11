@@ -22,7 +22,6 @@ function AuthProvider({ children }) {
       api.defaults.headers.authorization = `Bearer ${data.access_token}`;
       setUser(data.user);
     } catch (error) {
-      console.log(error.response);
       showMessage({
         type: 'warning',
         icon: 'warning',

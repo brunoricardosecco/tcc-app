@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Home from '../pages/App/Home';
 import Config from '../pages/App/Config';
 import Profile from '../pages/App/Profile';
-import AddTransaction from '../pages/App/AddTransaction';
+import TransactionStack from './TransactionStack';
 import { colors } from '../constants';
 import RankStack from './RankStack';
 
@@ -122,8 +122,8 @@ export default function BottomTab() {
           }}
         />
         <Tab.Screen
-          name="AddTransaction"
-          component={AddTransaction}
+          name="TransactionStack"
+          component={TransactionStack}
           options={{
             tabBarIcon: ({ focused, size }) => (
               <View

@@ -15,7 +15,7 @@ export default function Routes() {
         },
       }}
     >
-      {true ? <BottomTab /> : <AuthStack />}
+      {isLogged ? <BottomTab /> : <AuthStack />}
     </NavigationContainer>
   );
 }

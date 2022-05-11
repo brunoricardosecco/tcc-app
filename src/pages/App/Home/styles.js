@@ -3,7 +3,7 @@ import { colors, metrics } from '../../../constants';
 import { normalize } from '../../../helpers';
 
 const styles = StyleSheet.create({
-  profitCircle: {
+  profitCircle: (isPositive) => ({
     paddingTop: normalize(20),
     alignItems: 'center',
     width: normalize(150),
@@ -12,9 +12,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryDark,
     borderWidth: 1,
     borderTopWidth: 1,
-    borderColor: colors.red,
+    borderColor: isPositive ? colors.green : colors.red,
     alignSelf: 'center',
-    shadowColor: colors.red,
+    shadowColor: isPositive ? colors.green : colors.red,
     shadowOffset: {
       width: 0,
       height: 0,
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 10,
     elevation: 12,
-  },
+  }),
   baseText: {
     color: colors.white,
     fontSize: normalize(16),
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   profitValue: {
     color: colors.white,
-    fontSize: normalize(40),
+    fontSize: normalize(30),
     textAlign: 'center',
     fontWeight: 'bold',
     paddingTop: metrics.baseSpace,
@@ -48,33 +48,36 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-  picker: {
-    inputIOS: {
-      width: normalize(80),
-      fontSize: normalize(16),
-      paddingVertical: 10,
-      paddingHorizontal: 5,
-      borderWidth: 1,
-      borderColor: colors.primaryPurple,
-      borderRadius: metrics.baseRadius,
-      color: colors.white,
-      marginHorizontal: 5,
-    },
-    inputAndroid: {
-      fontSize: normalize(16),
-      paddingVertical: 5,
-      paddingHorizontal: 5,
-      borderWidth: 1,
-      borderColor: colors.primaryPurple,
-      borderRadius: metrics.baseRadius,
-      color: colors.white,
-      marginHorizontal: 5,
-    },
-    placeholder: {
-      fontSize: normalize(16),
-      color: colors.grey,
-    },
-  },
 });
+
+const pickerStyle = {
+  inputIOS: {
+    width: normalize(80),
+    fontSize: normalize(16),
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+    borderWidth: 1,
+    borderColor: colors.primaryPurple,
+    borderRadius: metrics.baseRadius,
+    color: colors.white,
+    marginHorizontal: 5,
+  },
+  inputAndroid: {
+    fontSize: normalize(16),
+    paddingVertical: 5,
+    paddingHorizontal: 5,
+    borderWidth: 1,
+    borderColor: colors.primaryPurple,
+    borderRadius: metrics.baseRadius,
+    color: colors.white,
+    marginHorizontal: 5,
+  },
+  placeholder: {
+    fontSize: normalize(16),
+    color: colors.grey,
+  },
+};
+
+export { pickerStyle };
 
 export default styles;
