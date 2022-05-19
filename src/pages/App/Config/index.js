@@ -1,50 +1,49 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 
 import SwitchButton from '../../../../assets/switchButton.json';
 
-import { colors, metrics } from '../../../constants';
 import { normalize } from '../../../helpers';
+import styles from './styles';
+import { useAuth } from '../../../hooks/useAuth';
 
 export default function Config() {
   const animation = useRef(null);
-  const [as, setAs] = useState(false);
+  const { user, updateUserStatus } = useAuth();
 
-  const onHandleToggleShowProfile = async () => {
+  const onHandleToggleShowProfile = () => {
+    updateUserStatus();
+  };
+
+  useEffect(() => {
     try {
-      if (as) {
+      if (user.isDiscoverable) {
         animation.current?.play(11, 26);
       } else {
         animation.current?.play(26, 11);
       }
-      setAs(!as);
     } catch (error) {
-      if (true) {
-        setTimeout(() => {
-          animation.current?.play(0, 12);
-        }, 1000);
+      if (user.isDiscoverable) {
+        animation.current?.play(11, 26);
       } else {
-        setTimeout(() => {
-          animation.current?.play(12, 0);
-        }, 1000);
+        animation.current?.play(26, 11);
       }
     }
-  };
+  }, [user]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.primaryDark }}>
-      <Text>Configuraçoes</Text>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Configurações</Text>
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          paddingHorizontal: metrics.baseSpace,
         }}
       >
-        <Text>Mostrar perfil a outros usuários:</Text>
+        <Text style={styles.label}>Mostrar perfil a outros usuários:</Text>
         <TouchableOpacity onPress={onHandleToggleShowProfile}>
           <LottieView
             style={{

@@ -7,6 +7,7 @@ import Home from '../pages/App/Home';
 import Config from '../pages/App/Config';
 import Profile from '../pages/App/Profile';
 import TransactionStack from './TransactionStack';
+import ProfileStack from './ProfileStack';
 import { colors } from '../constants';
 import RankStack from './RankStack';
 
@@ -164,8 +165,8 @@ export default function BottomTab() {
           }}
         />
         <Tab.Screen
-          name="Profile"
-          component={Profile}
+          name="ProfileStack"
+          component={ProfileStack}
           options={{
             tabBarIcon: ({ focused, size }) => (
               <View

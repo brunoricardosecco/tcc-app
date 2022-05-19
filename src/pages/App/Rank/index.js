@@ -10,11 +10,12 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 
 import { showMessage } from 'react-native-flash-message';
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar';
 import { getUsers } from '../../../services/requests/user';
+import { useAuth } from '../../../hooks/useAuth';
+import { useWallet } from '../../../hooks/useWallet';
 
 import Input from '../../../components/Input';
 import { colors, metrics } from '../../../constants';
@@ -28,11 +29,18 @@ export default function Rank({ navigation }) {
   const [searchList, setSearchList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const { user } = useAuth();
+  const { rentabilityPercent } = useWallet();
 
   const getFavoritesAsync = async () => {
     setIsLoading(true);
     try {
       const { data } = await getUsers({ onlyFavorited: true });
+
+      data.users.push({
+        ...user,
+        rentability: rentabilityPercent,
+      });
 
       data.users?.sort((a, b) => {
         if (Number(a.rentability) > Number(b.rentability)) {

@@ -11,6 +11,23 @@ export function useAuth() {
   );
   const logout = useContextSelector(AuthContext, (auth) => auth.logout);
   const signUp = useContextSelector(AuthContext, (auth) => auth.signUp);
+  const changePassword = useContextSelector(
+    AuthContext,
+    (auth) => auth.changePassword
+  );
+  const updateUserStatus = useContextSelector(
+    AuthContext,
+    (auth) => auth.updateUserStatus
+  );
 
-  return { isLogged, authenticate, logout, isLoading, signUp, user };
+  return {
+    isLogged,
+    authenticate,
+    logout,
+    isLoading,
+    signUp,
+    user,
+    changePassword,
+    updateUserStatus,
+  };
 }

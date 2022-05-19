@@ -71,6 +71,54 @@ function AuthProvider({ children }) {
     api.defaults.headers.authorization = null;
   }, []);
 
+  const changePassword = useCallback(
+    async (data, goBack) => {
+      try {
+        setIsLoading((prevState) => !prevState);
+
+        await api.post(`/user/${user.id}/change-password`, data);
+        showMessage({
+          type: 'success',
+          icon: 'success',
+          message: 'Senha alterada com sucesso!',
+          duration: 4500,
+        });
+        goBack();
+      } catch (error) {
+        showMessage({
+          type: 'warning',
+          icon: 'warning',
+          message: error.response?.data?.message,
+        });
+      } finally {
+        setIsLoading((prevState) => !prevState);
+      }
+    },
+    [user]
+  );
+
+  const updateUserStatus = useCallback(async () => {
+    try {
+      setIsLoading((prevState) => !prevState);
+
+      await api.put(`/user/${user.id}`, {
+        isDiscoverable: !user.isDiscoverable,
+      });
+      setUser((p) => ({
+        ...p,
+        isDiscoverable: !p.isDiscoverable,
+      }));
+    } catch (error) {
+      showMessage({
+        type: 'warning',
+        icon: 'warning',
+        message: error.response?.data?.message,
+      });
+    } finally {
+      setIsLoading((prevState) => !prevState);
+    }
+  }, [user]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -80,6 +128,8 @@ function AuthProvider({ children }) {
         isLoading,
         logout,
         signUp,
+        changePassword,
+        updateUserStatus,
       }}
     >
       {children}

@@ -15,7 +15,7 @@ import { colors, metrics } from '../../../constants';
 import { normalize } from '../../../helpers';
 import styles, { pickerStyle } from './styles';
 
-export default function Home() {
+export default function Home({ navigation }) {
   const { investedAmount, getWallet, totalAssetPercent, totalAsset } =
     useWallet();
   const { user } = useAuth();
@@ -69,6 +69,27 @@ export default function Home() {
       getWalletYears();
     }
   }, [getWalletYears, user.walletId, getWallet]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (selectedYear !== '' && user.walletId !== '') {
+        getWalletYearsProfit(user.walletId, selectedYear);
+      }
+      if (user.walletId !== '') {
+        getWallet(user.walletId);
+        getWalletYears();
+      }
+    });
+
+    return unsubscribe;
+  }, [
+    getWallet,
+    getWalletYears,
+    getWalletYearsProfit,
+    navigation,
+    selectedYear,
+    user.walletId,
+  ]);
 
   return (
     <ScrollView>
@@ -157,6 +178,7 @@ export default function Home() {
               }}
               style={{
                 marginVertical: metrics.baseSpace,
+                alignSelf: 'center',
               }}
             />
           )}

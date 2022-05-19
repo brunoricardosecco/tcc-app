@@ -11,6 +11,7 @@ import { useAuth } from '../../../../hooks/useAuth';
 import Button from '../../../../components/Button';
 import Input from '../../../../components/Input';
 import { colors, metrics } from '../../../../constants';
+import { useWallet } from '../../../../hooks/useWallet';
 
 export default function SearchStock({ route, navigation }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +21,7 @@ export default function SearchStock({ route, navigation }) {
     formState: { errors },
   } = useForm();
   const { user } = useAuth();
+  const { getWallet } = useWallet();
 
   const onHandleSubmit = async (data) => {
     setIsLoading(true);
@@ -46,6 +48,7 @@ export default function SearchStock({ route, navigation }) {
         icon: 'success',
         duration: 3000,
       });
+      getWallet(user.walletId);
       navigation.dispatch(StackActions.replace('BuyOrSell'));
       navigation.navigate('Home');
     } catch (err) {

@@ -13,3 +13,11 @@ export function getUserDetails({ userId }) {
     url: `/user/${userId}`,
   });
 }
+
+export function updateUser({ data }) {
+  return api.request({
+    method: 'PUT',
+    url: '/user',
+    data,
+  });
+}
