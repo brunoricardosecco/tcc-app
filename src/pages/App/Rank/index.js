@@ -1,4 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from 'react';
+import { FAB } from 'react-native-elements';
 import {
   TouchableWithoutFeedback,
   Text,
@@ -10,39 +17,79 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 
 import { showMessage } from 'react-native-flash-message';
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar';
 import { getUsers } from '../../../services/requests/user';
 import { useAuth } from '../../../hooks/useAuth';
 import { useWallet } from '../../../hooks/useWallet';
+import Picker from '../../../components/Picker';
+import Button from '../../../components/Button';
 
 import Input from '../../../components/Input';
 import { colors, metrics } from '../../../constants';
 import { normalize } from '../../../helpers';
 import styles from './styles';
 import { baseURL } from '../../../services/api';
+import {
+  getStates as getStatesRequest,
+  getCities as getCitiesRequest,
+} from '../../../services/requests/address';
 
 export default function Rank({ navigation }) {
   const [input, setInput] = useState('');
   const [favoritesList, setFavoritesList] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [location, setLocation] = useState({
+    stateId: null,
+    cityId: null,
+  });
   const [searchList, setSearchList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const { user } = useAuth();
-  const { rentabilityPercent } = useWallet();
+  const { totalAssetPercent } = useWallet(); // variables
+  const snapPoints = useMemo(() => ['1%', '92%'], []);
+  const sheetRef = useRef(null);
 
-  const getFavoritesAsync = async () => {
+  const getFavoritesAsync = async ({
+    onlyFavorited = true,
+    shouldAddCurrentUser = true,
+    cityId = '',
+    stateId = '',
+  } = {}) => {
     setIsLoading(true);
+    let users = [];
     try {
-      const { data } = await getUsers({ onlyFavorited: true });
+      const { data } = await getUsers({ onlyFavorited, cityId, stateId });
 
-      data.users.push({
-        ...user,
-        rentability: rentabilityPercent,
-      });
+      if (shouldAddCurrentUser) {
+        data.users.push({
+          ...user,
+          name: 'Você',
+          rentability: totalAssetPercent,
+        });
+        users = data.users;
+      } else {
+        const found = data.users?.find((u) => u.id === user.id);
 
-      data.users?.sort((a, b) => {
+        if (found) {
+          users = data.users.map((u) => {
+            if (u.id === user.id) {
+              return {
+                ...u,
+                name: 'Você',
+                rentability: totalAssetPercent,
+              };
+            }
+            return u;
+          });
+        }
+      }
+
+      users?.sort((a, b) => {
         if (Number(a.rentability) > Number(b.rentability)) {
           return -1;
         }
@@ -50,7 +97,7 @@ export default function Rank({ navigation }) {
         return 1;
       });
 
-      setFavoritesList(data.users);
+      setFavoritesList(users);
     } catch (error) {
       showMessage({
         icon: 'danger',
@@ -87,6 +134,56 @@ export default function Rank({ navigation }) {
     setInput('');
   };
 
+  const getStates = async () => {
+    try {
+      const {
+        data: { states: receivedStates },
+      } = await getStatesRequest();
+      const formattedStates = receivedStates.map((state) => ({
+        label: `${state.name}`,
+        value: state.id,
+      }));
+
+      setStates(formattedStates);
+    } catch (error) {
+      showMessage({
+        type: 'warning',
+        icon: 'warning',
+        message: 'Erro ao recuperar os estados',
+      });
+    }
+  };
+
+  const getCities = async () => {
+    try {
+      const {
+        data: { cities: receivedCities },
+      } = await getCitiesRequest({ stateId: location.stateId });
+      const formattedCities = receivedCities.map((state) => ({
+        label: `${state.name}`,
+        value: state.id,
+      }));
+      setCities(formattedCities);
+    } catch (error) {
+      showMessage({
+        type: 'warning',
+        icon: 'warning',
+        message: 'Erro ao recuperar as cidades',
+      });
+    }
+  };
+
+  // callbacks
+  const handleSheetChange = useCallback((index) => {
+    console.log('handleSheetChange', index);
+  }, []);
+  const handleSnapPress = useCallback((index) => {
+    sheetRef.current?.snapToIndex(index);
+  }, []);
+  const handleClosePress = useCallback(() => {
+    sheetRef.current?.close();
+  }, []);
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       getFavoritesAsync();
@@ -94,6 +191,20 @@ export default function Rank({ navigation }) {
 
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    handleClosePress();
+  }, [sheetRef]);
+
+  useEffect(() => {
+    getStates();
+  }, []);
+
+  useEffect(() => {
+    if (location.stateId) {
+      getCities();
+    }
+  }, [location.stateId]);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -125,7 +236,7 @@ export default function Rank({ navigation }) {
           data={searchList}
         />
         <Text style={styles.title}>
-          {searchList.length > 0 ? 'Usuários' : 'Favoritos'}
+          {searchList.length > 0 ? 'Usuários' : 'Ranking'}
         </Text>
         {searchList.length === 0 && (
           <FlatList
@@ -147,6 +258,75 @@ export default function Rank({ navigation }) {
             )}
           />
         )}
+        <BottomSheet
+          ref={sheetRef}
+          snapPoints={snapPoints}
+          onChange={handleSheetChange}
+          enablePanDownToClose
+          style={{ backgroundColor: colors.primaryDark }}
+          backgroundStyle={{
+            backgroundColor: colors.primaryDark,
+          }}
+        >
+          <BottomSheetView
+            style={{
+              backgroundColor: colors.primaryDark,
+              flex: 1,
+              borderTopWidth: 1,
+              borderTopColor: colors.primaryPurple,
+              padding: metrics.baseSpace,
+            }}
+          >
+            <Picker
+              onValueChange={(v) => setLocation({ ...location, stateId: v })}
+              value={location.stateId}
+              items={states}
+            />
+            <Picker
+              onValueChange={(v) => setLocation({ ...location, cityId: v })}
+              value={location.cityId}
+              items={cities}
+            />
+            <Button
+              title="Aplicar filtros"
+              onPress={() => {
+                getFavoritesAsync({
+                  stateId: location.stateId,
+                  cityId: location.cityId,
+                  onlyFavorited: false,
+                  shouldAddCurrentUser: false,
+                });
+                handleClosePress();
+              }}
+            />
+            {console.log({ location })}
+            {(location.stateId || location.cityId) && (
+              <Button
+                title="Limpar filtros"
+                onPress={() => {
+                  getFavoritesAsync({
+                    stateId: null,
+                    cityId: null,
+                    onlyFavorited: true,
+                  });
+                  setLocation({ stateId: null, cityId: null });
+                  handleClosePress();
+                }}
+                containerStyle={{ paddingTop: metrics.baseSpace }}
+              />
+            )}
+          </BottomSheetView>
+        </BottomSheet>
+        <FAB
+          visible
+          placement="right"
+          style={{ marginBottom: '25%' }}
+          icon={{
+            name: 'filter-alt',
+          }}
+          color={colors.primaryPurple}
+          onPress={() => handleSnapPress(1)}
+        />
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );

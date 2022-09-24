@@ -21,6 +21,14 @@ function WalletProvider({ children }) {
 
       const { data } = await getWalletRequest(walletId);
 
+      console.log(
+        data.wallet.actualAmount,
+        data.wallet.investedAmount,
+        data.wallet.totalAsset,
+        data.wallet.rentabilityPercent,
+        data.wallet.totalAssetPercent
+      );
+
       setTransactions(data.wallet.history);
       setActualAmount(data.wallet.actualAmount);
       setInvestedAmount(data.wallet.investedAmount);

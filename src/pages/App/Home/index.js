@@ -146,6 +146,7 @@ export default function Home({ navigation }) {
               value={selectedYear}
             />
           </View>
+          {console.log(chartValues)}
           {chartValues.months.length > 0 && (
             <LineChart
               data={{

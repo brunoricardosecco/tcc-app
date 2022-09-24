@@ -1,9 +1,19 @@
 import api from '../api';
 
-export function getUsers({ onlyFavorited = false, name = '' }) {
+export function getUsers({
+  onlyFavorited = false,
+  name = '',
+  stateId = '',
+  cityId = '',
+}) {
+  console.log({ onlyFavorited, name, stateId, cityId });
   return api.request({
     method: 'GET',
-    url: `/user?onlyFavorited=${onlyFavorited}&name=${name}`,
+    url: `/user?onlyFavorited=${onlyFavorited}&name=${
+      name === null ? '' : name
+    }&cityId=${cityId === null ? '' : cityId}&stateId=${
+      stateId === null ? '' : stateId
+    }`,
   });
 }
 
